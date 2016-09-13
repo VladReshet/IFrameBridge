@@ -36,6 +36,11 @@ var IFrameBridge = function(send){
             routes[route] = callback;
         },
 
+        removeRoute : function(route){
+            routes[route] = undefined;
+            delete routes[route];
+        },
+
         getRoutes : function(){
             return routes;
         }
