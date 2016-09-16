@@ -1,6 +1,13 @@
 // bridge for cross-domains messages between iframe and parent page
 var IFrameBridge = function(send){
     var routes = {};
+    var debug = false;
+    
+    var log = function(type, text){
+        if(debug){
+            console[type](text);
+        }
+    };
 
     var sender = function(route, data){
         send(JSON.stringify({
@@ -16,10 +23,10 @@ var IFrameBridge = function(send){
         var data = data.data;
 
         if(routes[route] !== undefined){
-            console.info('Route ' + route + ' was called');
+            log('info', 'Route ' + route + ' was called');
             routes[route](data, sender);
         }else{
-            console.error('Route ' + route + ' is undefined');
+            log('error', 'Route ' + route + ' is undefined');
         }
     };
 
@@ -28,21 +35,31 @@ var IFrameBridge = function(send){
             window.addEventListener('message', function(event){
                 handleRoute(event);
             });
+
+            return this;
         },
 
         send : sender,
 
         addRoute : function(route, callback){
             routes[route] = callback;
+
+            return this;
         },
 
         removeRoute : function(route){
             routes[route] = undefined;
             delete routes[route];
+
+            return this;
         },
 
         getRoutes : function(){
             return routes;
+        },
+
+        toggleDebug : function(){
+            debug = !debug;
         }
     };
 };
